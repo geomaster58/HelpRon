@@ -6,9 +6,31 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
   </head>
 
   <body>
+    <%= render "shared/nav" %>
+
+    <% if current_page?("/") %>
+      
+    
+    <section>
     <%= yield %>
+    </section>
+
+    <% else %>
+    <section class="sectioner">
+    <%= yield %>
+    </section>
+    <% end %>
+    <footer>
+      <p> © JJ Keeney | 2017 All transactions are passed through Stripe, a secure way to transfer money on the internet. Learn more at <a href="https://stripe.com/" target="_blank">Stripe.com</a></p>
+    </footer>
   </body>
 </html>
+
+
+
+      
+    

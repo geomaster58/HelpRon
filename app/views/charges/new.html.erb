@@ -1,0 +1,88 @@
+ <div class="row">
+   <div class="col m2"></div>
+   <div class="col  m10">
+     <div class="card  purple darken-4 form-container
+     ">
+     <div class="row">
+       <div class="col m3"></div>
+       <div class="col m3">
+
+         <div class="card   green darken-4">
+          <div class="card-content white-text">
+
+            <h4>Instructions:</h4>
+            <ol>
+              <li>Amount must be in US Dollars.</li>
+              <li>Amount must be more than or equal to a dollar.</li>
+              <br><br>
+
+            </ol>
+          </div>
+        </div>
+
+      </div>
+      <div class="col s12 m3">
+        <div class="card green darken-4">
+          <div class="card-content white-text">
+
+
+            <%= form_tag charges_path do %>
+            <div id="error_explanation">
+              <% if flash[:error].present? %>
+              <p><%= flash[:error] %></p>
+              <% end %>
+            </div>
+            <article>
+              <span class="donation"><%= label_tag(:amount, 'Donation Amount:') %></span>
+              <%= text_field_tag(:amount) %>
+            </article>
+            <article>
+              <%= hidden_field_tag(:stripeToken) %>
+            </article>
+            <button id='donateButton' class="btn">Donate</button>
+            <% end %>
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="https://checkout.stripe.com/checkout.js"></script>
+
+<script>
+  var handler = StripeCheckout.configure({
+    key: '<%= Rails.configuration.stripe[:publishable_key] %>',
+    locale: 'auto',
+    name: 'Donation For Ron',
+    description: 'One-time donation',
+    token: function(token) {
+      $('input#stripeToken').val(token.id);
+      $('form').submit();
+    }
+  });
+  $('#donateButton').on('click', function(e) {
+    e.preventDefault();
+
+    $('#error_explanation').html('');
+
+    var amount = $('input#amount').val();
+    amount = amount.replace(/\$/g, '').replace(/\,/g, '')
+
+    amount = parseFloat(amount);
+
+    if (isNaN(amount)) {
+      $('#error_explanation').html('<p>Please enter a valid amount in USD ($).</p>');
+    }
+    else if (amount < 1.00) {
+      $('#error_explanation').html('<p>Donation amount must be at least $1.</p>');
+    }
+    else {
+    amount = amount * 100; // Needs to be an integer!
+    handler.open({
+      amount: Math.round(amount)
+    })
+  }
+});
+</script>
